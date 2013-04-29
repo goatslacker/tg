@@ -1,84 +1,202 @@
-function disambiguateObjectType(x) {
-  if (Array.isArray(x)) {
-    return 'array'
-  }
+/*jshint asi: true */
+tg(Function, tg)
+function tg() {
+  (function (exports) {
+    var hasOwn = Object.prototype.hasOwnProperty
+    var slice = Array.prototype.slice
 
-  if (x === null) {
-    return 'null'
-  }
+    function Maybe(type) {
+      this.t = type
+    }
 
-//  console.log('@', typeof x, x, Object.prototype.toString.call(x))
+    function Or(types) {
+      this.t = types
+    }
 
-  return Object.prototype.toString.call(x)
-    .toLowerCase()
-    .replace(/\[object (.*)\]/, function (a, b) { return b })
-}
+    function Any() { }
 
-function typeOf(x) {
-  var type = typeof x
+    function Obj(type) {
+      this.t = type
+    }
 
-  switch (type) {
-    case 'object':
-      return disambiguateObjectType(x)
-    default:
-      return type
-  }
-}
+    function F(f, args) {
+      this.f = f
+      this.a = args
+    }
 
-function getTypeFunctionName(f) {
-  return f.name.toLowerCase()
-}
+    F.prototype.check = function (actual) {
+      var result = this.f.apply(this.f, this.a.concat(actual))
+      if (result === true) {
+        return actual
+      }
+      throw new TypeError(
+        'Expected the result of ' + this.f + ' to be true when ' +
+        actual + ' was passed but instead received false.'
+      )
+    }
 
-function assert(expected, actual) {
-  var type = typeOf(actual)
-  if (type !== expected) {
-    throw new TypeError(
-      'Expected ' + expected +
+    function sign(types, fn) {
+      var ret = types.pop()
+      var args = types
+      return function () {
+        tg.call(tg, args, slice.call(arguments))
+        return tg.call(tg, ret, fn.apply(fn, arguments))
+      }
+    }
+
+    function disambiguateObjectType(x) {
+      if (Array.isArray(x)) {
+        return 'array'
+      }
+
+      if (x === null) {
+        return 'null'
+      }
+
+      return Object.prototype.toString.call(x)
+        .toLowerCase()
+        .replace(/\[object (.*)\]/, function (a, b) { return b })
+    }
+
+    function typeOf(x) {
+      var type = typeof x
+
+      switch (type) {
+        case 'object':
+          return disambiguateObjectType(x)
+        default:
+          return type
+      }
+    }
+
+    function getTypeFunctionName(f) {
+      return f.name.toLowerCase()
+    }
+
+    function makeError(expected, actual, type) {
+      return 'Expected ' + expected +
       ' but received ' + type +
       ' (' + actual + ')'
-    )
-  }
-  return actual
-}
+    }
 
-function tg(expected, actual) {
-  var _t = typeOf(expected)
-  switch (_t) {
-    case 'function':
-      if (actual instanceof expected) { // XXX ?
-        return actual
-      } else {
-        return assert(getTypeFunctionName(expected), actual)
+    function assert(expected, actual) {
+      var type = typeOf(actual)
+      if (type !== expected) {
+        throw new TypeError(makeError(expected, actual, type))
       }
-    case 'array':
-      return
-    case 'object':
-      return
-    case 'null':
-    case 'undefined':
-      return assert(_t, actual)
-  }
+      return actual
+    }
+
+    function compareOptionalTypes(expected, actual) {
+      var doesItWork = expected.some(function (x) {
+        try { tg(x, actual) } catch (err) { return false }
+        return true
+      })
+
+      if (!doesItWork) {
+        throw new TypeError(makeError(
+          expected.map(getTypeFunctionName),
+          actual,
+          typeOf(actual)
+        ))
+      }
+
+      return actual
+    }
+
+    function typecheckArray(expected, actual) {
+      tg(Array, actual)
+      if (expected.length === 1) {
+        actual.forEach(function (x) {
+          tg(expected[0], x)
+        })
+      } else {
+        if (expected.length !== actual.length) {
+          throw new TypeError(
+            'Function signature defines ' + expected.length + ' arguments ' +
+            'but the function was passed ' + actual.length + ' arguments'
+          )
+        } else {
+          expected.forEach(function (x, i) {
+            tg(x, actual[i])
+          })
+        }
+      }
+      return actual
+    }
+
+    function typecheckObject(expected, actual) {
+      tg(Object, actual)
+      Object.keys(expected).forEach(function (x) {
+        if (hasOwn.call(actual, x)) {
+          tg(expected[x], actual[x])
+        } else {
+          throw new TypeError('Expected key `' + x + '` but it is not defined')
+        }
+      })
+      return actual
+    }
+
+
+    // API
+    tg = function (expected, actual) {
+      if (expected instanceof Maybe) {
+        if (actual === null) {
+          return actual
+        }
+        expected = expected.t
+      } else if (expected instanceof Or) {
+        return compareOptionalTypes(expected.t, actual)
+      } else if (expected instanceof Any) {
+        return actual
+      } else if (expected instanceof F) {
+        return expected.check(actual)
+      } else if (expected instanceof Obj) {
+        Object.keys(actual).forEach(function (x) {
+          tg(expected.t, actual[x])
+        })
+        return actual
+      }
+
+      var _t = typeOf(expected)
+      switch (_t) {
+        case 'function':
+          return assert(getTypeFunctionName(expected), actual)
+        case 'array':
+          return typecheckArray(expected, actual)
+        case 'object':
+          return typecheckObject(expected, actual)
+        case 'null':
+        case 'undefined':
+          return assert(_t, actual)
+      }
+    }
+
+    tg.Maybe = function (type) {
+      return new Maybe(type)
+    }
+
+    tg.Or = function () {
+      return new Or(slice.call(arguments))
+    }
+
+    tg.Any = new Any()
+
+    tg.Obj = function (type) {
+      return new Obj(type)
+    }
+
+    tg.sign = sign([Array, Function, Function], sign)
+
+    tg.f = function (f) {
+      var args = slice.call(arguments, 1)
+      return new F(f, args)
+    }
+
+    if (typeof module !== 'undefined') {
+      module.exports = tg
+    }
+  }(this));
+
+  return tg.apply(tg, arguments)
 }
-
-//function CustomType() {
-//}
-
-//console.log(typeOf(new CustomType()))
-
-//tg(Boolean, 4)
-//tg(RegExp, function (x) { return x })
-//tg(Error, new Error('yay'))
-//console.log(4 instanceof Number)
-//tg(Array, { key: 1 })
-//tg(Object, [1, 2, 3])
-//tg(CustomType, new CustomType)
-//tg(Boolean, true)
-tg([Number, Number], [1, 2])
-//tg(undefined, undefined)
-//tg(null, null)
-//tg(Date, new Date())
-//tg(RegExp, /hello/)
-
-//console.log(typeOf({ a: 1}))
-
-module.exports = tg

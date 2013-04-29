@@ -1,0 +1,20 @@
+{
+  "name": "tg",
+  "version": "0.0.1",
+  "description": "type checking",
+  "main": "tg.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "node test/index.js"
+  },
+  "repository": "git://goatslacker.github.com/tg.git",
+  "keywords": [
+    "type",
+    "check",
+    "guard"
+  ],
+  "author": "Josh Perez",
+  "license": "MIT"
+}
