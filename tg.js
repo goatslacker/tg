@@ -1,7 +1,7 @@
 /*jshint asi: true */
 tg(Function, tg)
 function tg() {
-  (function (exports) {
+  (function () {
     var hasOwn = Object.prototype.hasOwnProperty
     var slice = Array.prototype.slice
 
@@ -196,7 +196,7 @@ function tg() {
     if (typeof exports !== 'undefined') {
       exports.tg = tg
     }
-  }(this));
+  }());
 
   return tg.apply(tg, arguments)
 }
