@@ -193,8 +193,8 @@ function tg() {
       return new F(f, args)
     }
 
-    if (typeof module !== 'undefined') {
-      module.exports = tg
+    if (typeof exports !== 'undefined') {
+      exports.tg = tg
     }
   }(this));
 

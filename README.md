@@ -8,7 +8,7 @@ Install
 
 Usage
 
-    var tg = require('tg')
+    var tg = require('tg').tg
     tg(Number, 4)
 
     tg(String, 4) // throws a TypeError
