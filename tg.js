@@ -70,7 +70,9 @@ function tg() {
     }
 
     function getTypeFunctionName(f) {
-      return f.name.toLowerCase()
+      return typeof f == 'string'
+        ? f.toLowerCase()
+        : f.name.toLowerCase()
     }
 
     function makeError(expected, actual, type) {
@@ -160,6 +162,7 @@ function tg() {
 
       var _t = typeOf(expected)
       switch (_t) {
+        case 'string':
         case 'function':
           return assert(getTypeFunctionName(expected), actual)
         case 'array':

@@ -1,5 +1,5 @@
 var assert = require('assert')
-var tg = require('../tg.min.js')
+var tg = require('../tg.min.js').tg
 
 var fails = function () {
   try {
@@ -82,3 +82,7 @@ foo(3)
 var Even = function(x) { return x % 2 === 0 }
 fails(tg.f(Even), 3)
 ok(tg.f(Even), 6)
+
+ok('number', 3)
+ok('String', 'hello')
+fails('regexp', null)
