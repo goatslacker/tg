@@ -154,6 +154,7 @@ function tg() {
       } else if (expected instanceof F) {
         return expected.check(actual)
       } else if (expected instanceof Obj) {
+        tg(Object, actual)
         Object.keys(actual).forEach(function (x) {
           tg(expected.t, actual[x])
         })

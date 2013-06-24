@@ -4,6 +4,7 @@ var tg = require('../tg.min.js').tg
 var fails = function () {
   try {
     tg.apply(tg, arguments)
+    assert.ok(false)
   } catch (err) {
     assert.ok(err instanceof TypeError)
   }
@@ -86,3 +87,5 @@ ok(tg.f(Even), 6)
 ok('number', 3)
 ok('String', 'hello')
 fails('regexp', null)
+
+fails(tg.Obj(Number), /a/)
