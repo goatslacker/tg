@@ -56,6 +56,7 @@ ok(tg.Or(Number, undefined), undefined)
 ok(tg.Maybe(Number), 4)
 ok(tg.Maybe(Number), null)
 fails(tg.Maybe(Number), 'four')
+fails(tg.Maybe(Number), undefined)
 
 ok(tg.Or(String, Number), '2')
 ok(tg.Or(String, Number), 2)
