@@ -1,6 +1,6 @@
 {
   "name": "tg",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "type checking",
   "main": "tg.js",
   "directories": {
@@ -10,6 +10,7 @@
     "test": "node test/index.js"
   },
   "repository": "git://goatslacker.github.com/tg.git",
+  "dependencies": {},
   "keywords": [
     "type",
     "check",
