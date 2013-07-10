@@ -31,7 +31,7 @@ fails(Array, { length: 1 })
 fails(Object, [1, 2, 3])
 
 function CustomType() { }
-ok(tg.f(function (x) { return x instanceof CustomType }), new CustomType)
+ok(tg.assert(function (x) { return x instanceof CustomType }), new CustomType)
 
 ok(Boolean, true)
 
@@ -82,8 +82,8 @@ var foo = tg.sign([Number, Number], function (x) { return x })
 foo(3)
 
 var Even = function(x) { return x % 2 === 0 }
-fails(tg.f(Even), 3)
-ok(tg.f(Even), 6)
+fails(tg.assert(Even), 3)
+ok(tg.assert(Even), 6)
 
 ok('number', 3)
 ok('String', 'hello')

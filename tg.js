@@ -19,12 +19,12 @@ function tg() {
       this.t = type
     }
 
-    function F(f, args) {
+    function Custom(f, args) {
       this.f = f
       this.a = args
     }
 
-    F.prototype.check = function (actual) {
+    Custom.prototype.check = function (actual) {
       var result = this.f.apply(this.f, this.a.concat(actual))
       if (result === true) {
         return actual
@@ -151,7 +151,7 @@ function tg() {
         return compareOptionalTypes(expected.t, actual)
       } else if (expected instanceof Any) {
         return actual
-      } else if (expected instanceof F) {
+      } else if (expected instanceof Custom) {
         return expected.check(actual)
       } else if (expected instanceof Obj) {
         tg(Object, actual)
@@ -192,9 +192,9 @@ function tg() {
 
     tg.sign = sign([Array, Function, Function], sign)
 
-    tg.f = function (f) {
+    tg.assert = function (f) {
       var args = slice.call(arguments, 1)
-      return new F(f, args)
+      return new Custom(f, args)
     }
 
     if (typeof exports !== 'undefined') {
