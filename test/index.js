@@ -78,8 +78,8 @@ fails(tg.Obj(tg.Or(Number, String)), { a: true, b: '2' })
 ok(tg.Obj(tg.Maybe(Boolean)), { a: true, b: null })
 fails(tg.Obj(tg.Maybe(Boolean)), { a: true, b: 'true' })
 
-var foo = tg.sign([Number, Number], function (x) { return x })
-foo(3)
+var foo = tg.sign([Number], Number, function (x) { return x })
+foo(2)
 
 var Even = function(x) { return x % 2 === 0 }
 fails(tg.assert(Even), 3)

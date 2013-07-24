@@ -35,12 +35,10 @@ function tg() {
       )
     }
 
-    function sign(types, fn) {
-      var ret = types.pop()
-      var args = types
+    function sign(args, ret, fn) {
       return function () {
-        tg.call(tg, args, slice.call(arguments))
-        return tg.call(tg, ret, fn.apply(fn, arguments))
+        tg(args, slice.call(arguments))
+        return tg(ret, fn.apply(fn, arguments))
       }
     }
 
@@ -190,7 +188,7 @@ function tg() {
       return new Obj(type)
     }
 
-    tg.sign = sign([Array, Function, Function], sign)
+    tg.sign = sign([[tg.Any], tg.Any, Function], Function, sign)
 
     tg.assert = function (f) {
       var args = slice.call(arguments, 1)
