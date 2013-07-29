@@ -2,6 +2,9 @@
 
 > Type checking at runtime
 
+[![Build Status](https://secure.travis-ci.org/goatslacker/tg.png)](http://travis-ci.org/goatslacker/tg)
+[![NPM version](https://badge.fury.io/js/tg.png)](http://badge.fury.io/js/tg)
+
 Install
 
     npm install tg
