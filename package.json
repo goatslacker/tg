@@ -1,6 +1,6 @@
 {
   "name": "tg",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "type checking",
   "main": "tg.js",
   "directories": {
