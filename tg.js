@@ -130,7 +130,7 @@ function tg() {
       Object.keys(expected).forEach(function (x) {
         if (hasOwn.call(actual, x)) {
           tg(expected[x], actual[x])
-        } else {
+        } else if (!(expected[x] instanceof Maybe)) {
           throw new TypeError('Expected key `' + x + '` but it is not defined')
         }
       })
@@ -141,7 +141,7 @@ function tg() {
     // API
     tg = function (expected, actual) {
       if (expected instanceof Maybe) {
-        if (actual === null) {
+        if (actual == null) {
           return actual
         }
         expected = expected.t

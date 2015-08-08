@@ -56,7 +56,7 @@ ok(tg.Or(Number, undefined), undefined)
 ok(tg.Maybe(Number), 4)
 ok(tg.Maybe(Number), null)
 fails(tg.Maybe(Number), 'four')
-fails(tg.Maybe(Number), undefined)
+ok(tg.Maybe(Number), undefined)
 
 ok(tg.Or(String, Number), '2')
 ok(tg.Or(String, Number), 2)
@@ -90,3 +90,15 @@ ok('String', 'hello')
 fails('regexp', null)
 
 fails(tg.Obj(Number), /a/)
+
+ok({
+  optionalField: tg.Maybe(String)
+}, {})
+
+ok({
+  optionalField: tg.Maybe(String)
+}, { optionalField: 'hello' })
+
+fails({
+  optionalField: tg.Maybe(String)
+}, { optionalField: 2 })
